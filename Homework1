@@ -1,0 +1,18 @@
+// CLite Test
+
+int main(){
+	int a, b, plus;
+	a = 10;
+	b = 20;
+
+	if(a >= b){
+		b = a - b + b;
+	} else{
+		a = b - a + a;
+	}
+
+	while(a <= 0){
+		a = a - 1;
+		b = b + 1;
+	}
+}

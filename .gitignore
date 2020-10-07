@@ -1,0 +1,11 @@
+## Intellij
+.idea/
+out/
+lib/
+bin/
+
+## Eclipse
+.settings/
+
+## Commons
+*.class
