@@ -50,10 +50,11 @@ public class 몸짱_트레이너_라이언의_고민 {
             }
         }
 
-        int mid = (n % 2 == 1) ? (n + 1) * n / 2 : n * n / 2;
+        int mid = n * n / 2;
+        if (n % 2 == 1) mid++;
         if (maxCnt < 2) return 0;
         if (maxCnt > mid) return 1;
-        return binarySearch(maxCnt, 0, n * n - 2);
+        return binarySearch(maxCnt, 2, n * n - 2);
     }
 
     public int binarySearch(int cnt, int l, int r) {
@@ -83,7 +84,7 @@ public class 몸짱_트레이너_라이언의_고민 {
         if (cnt == 0) return true;
 
         // 2. 남은 락커에 minDist를 유지하면서 cnt만큼 할당할 수 없을 때 (남은 좌표의 개수 x 최소거리 > 남은 칸 return)
-        if (n * n - n * row + col < (cnt - 1) * minDist) return false;
+        if (n * (n - row) + col < (cnt - 1) * minDist) return false;
 
         // 3. row가 범위를 넘어서면 False
         if (row == n) return false;
