@@ -1,7 +1,6 @@
 package oop.blackjack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +21,16 @@ public class CardDeck {
 
     private void generatedCards() {
         cards.clear();
-        Arrays.stream(Pattern.values())
-                .forEach(pattern -> Arrays.stream(Denomination.values())
-                .forEach(denomination -> cards.add(new Card(pattern, denomination))));
+
+        // Stream에서 for-each로 변경
+        // - Stream의 forEach 내부에 로직이 하나라도 더 추가된다면 동시성 보장이 어려워지고 가독성이 떨어질 위험이 있다.
+        // - Stream의 forEach는 스트림의 종료를 위한 연산으로 로직을 수행하는 역할은 Stream을 반환하는 중간연산이 해야하는 일이다.
+        // 출처: https://woowacourse.github.io/javable/2020-05-14/foreach-vs-forloop
+        for (Pattern pattern: Pattern.values()) {
+            for (Denomination denomination: Denomination.values()) {
+                cards.add(new Card(pattern, denomination));
+            }
+        }
     }
 
     public void setIsShuffled(boolean shuffled) {
