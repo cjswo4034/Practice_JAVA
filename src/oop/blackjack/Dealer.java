@@ -24,7 +24,7 @@ public class Dealer {
     }
 
     // 카드를 배부한다.
-    public void handOutCardOn(CardDeck cardDeck, Player player){
+    public void handOutCardOn(CardDeck cardDeck, Player player) {
         Card card = draw(cardDeck);
         player.receivedCard(card);
     }
@@ -41,22 +41,24 @@ public class Dealer {
 
     // 카드 점수 합계가 16점을 초과할 때까지 카드를 한 장 뽑는다.
     public boolean isAbleToTakeAnotherCard(CardDeck cardDeck) {
-        if (getPoints(cards) > CAN_RECEIVE_POINT) return false;
+        if (calculatePoints(cards) > CAN_RECEIVE_POINT) return false;
         System.out.println("Dealer is drawing a card...");
         takeCard(cardDeck);
         return true;
     }
 
     // 게임이 끝나면(더 이상 카드를 뽑는 게이머가 없으면) 게이머의 카드 덱을 보고 점수를 계산한다.
-    private int getPoints(List<Card> cards) {
-        return cards.stream()
+    private int calculatePoints(List<Card> cards) {
+        int point = cards.stream()
                 .mapToInt(Card::getPoint)
                 .sum();
+        if (point > 21) return 0;
+        return point;
     }
 
     private void showCards() {
         System.out.println("Dealer's cards");
-        for (Card card: cards)
+        for (Card card : cards)
             System.out.println(card);
     }
 
@@ -65,11 +67,9 @@ public class Dealer {
         showCards();
         player.showCards();
 
-        int playerPoint = getPoints(player.getCards());
-        int dealerPoint = getPoints(cards);
+        int playerPoint = calculatePoints(player.getCards());
+        int dealerPoint = calculatePoints(cards);
 
-        if (playerPoint > 21) playerPoint = 0;
-        if (dealerPoint > 21) dealerPoint = 0;
         return Integer.compare(dealerPoint, playerPoint);
     }
 }

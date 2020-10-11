@@ -15,12 +15,12 @@ public class CardDeck {
     public CardDeck() {}
 
     public void prepForNewGame() {
+        isShuffled = false;
+        currentUsed = 0;
         generatedCards();
     }
 
     private void generatedCards() {
-        isShuffled = false;
-        currentUsed = 0;
         cards.clear();
         Arrays.stream(Pattern.values())
                 .forEach(pattern -> Arrays.stream(Denomination.values())
@@ -38,7 +38,7 @@ public class CardDeck {
         return Optional.of(cards.get(currentUsed++));
     }
 
-    // 카드가 섞이고 나면 얻을 수 없다.
+    // 딜러가 덱을 섞기 전에 카드를 얻을 수 없다.
     public Optional<List<Card>> getCards() {
         if (isShuffled) return Optional.of(cards);
         else return Optional.empty();
