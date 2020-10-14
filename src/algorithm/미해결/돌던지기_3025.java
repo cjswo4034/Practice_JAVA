@@ -1,4 +1,4 @@
-package algorithm.실패;
+package algorithm.미해결;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
