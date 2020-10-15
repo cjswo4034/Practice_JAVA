@@ -43,15 +43,16 @@ public class 큐빙_5373 {
     }
 
     static class Cube {
+        static final int CUBE_SIZE = 3;
         char[][][] faces, tmpFaces;
         boolean isClockwise;
         int rotateUAngle, rotateDAngle, rotateLAngle, rotateRAngle;
 
         public Cube() {
-            faces = new char[6][3][3];
-            tmpFaces = new char[6][3][3];
+            faces = new char[6][CUBE_SIZE][CUBE_SIZE];
+            tmpFaces = new char[6][CUBE_SIZE][CUBE_SIZE];
             for (Type type: Type.values()) {
-                for (int j = 0; j < 3; j++) {
+                for (int j = 0; j < CUBE_SIZE; j++) {
                     Arrays.fill(faces[type.num][j], type.color);
                 }
             }
@@ -92,15 +93,15 @@ public class 큐빙_5373 {
 
             // 4. Copy 큐브를 원본 큐브에 Transpose
             if (isClockwise) {
-                transpose(up, right, true, 2, 0, false);
-                transpose(down, left, true, 0, 2, false);
-                transpose(left, up, false, 2, 2, true);
+                transpose(up, right, true, CUBE_SIZE - 1, 0, false);
+                transpose(down, left, true, 0, CUBE_SIZE - 1, false);
+                transpose(left, up, false, CUBE_SIZE - 1, CUBE_SIZE - 1, true);
                 transpose(right, down, false, 0, 0, true);
             } else {
-                transpose(up, left, true, 2, 2, true);
+                transpose(up, left, true, CUBE_SIZE - 1, CUBE_SIZE - 1, true);
                 transpose(down, right, true, 0, 0, true);
-                transpose(left, down, false, 2, 0, false);
-                transpose(right, up, false, 0, 2, false);
+                transpose(left, down, false, CUBE_SIZE - 1, 0, false);
+                transpose(right, up, false, 0, CUBE_SIZE - 1, false);
             }
 
             // 5. 원본 큐브 복구
@@ -109,8 +110,8 @@ public class 큐빙_5373 {
 
         private void copyArr(Type... types) {
             for (Type type: types) {
-                for (int i = 0; i < 3; i++) {
-                    System.arraycopy(faces[type.num][i], 0, tmpFaces[type.num][i], 0, 3);
+                for (int i = 0; i < CUBE_SIZE; i++) {
+                    System.arraycopy(faces[type.num][i], 0, tmpFaces[type.num][i], 0, CUBE_SIZE);
                 }
             }
         }
@@ -124,13 +125,13 @@ public class 큐빙_5373 {
          * @param reverse 옮길 면의 원소를 역순으로 옮김.
          */
         private void transpose(Type from, Type to, boolean isRow, int fromV, int toV, boolean reverse) {
-            int j = reverse ? 2 : 0;
+            int j = reverse ? CUBE_SIZE - 1 : 0;
             int adder = reverse ? -1 : 1;
             if (isRow) {
-                for (int i = 0; i < 3; i++, j+= adder)
+                for (int i = 0; i < CUBE_SIZE; i++, j+= adder)
                     faces[to.num][i][toV] = tmpFaces[from.num][fromV][j];
             } else {
-                for (int i = 0; i < 3; i++, j+= adder)
+                for (int i = 0; i < CUBE_SIZE; i++, j+= adder)
                     faces[to.num][toV][i] = tmpFaces[from.num][j][fromV];
             }
         }
@@ -167,11 +168,11 @@ public class 큐빙_5373 {
         }
 
         private char[][] rotate(Type type) {
-            char[][] tmp = new char[3][3];
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (isClockwise) tmp[i][j] = faces[type.num][2 - j][i];
-                    else tmp[i][j] = faces[type.num][j][2 - i];
+            char[][] tmp = new char[CUBE_SIZE][CUBE_SIZE];
+            for (int i = 0; i < CUBE_SIZE; i++) {
+                for (int j = 0; j < CUBE_SIZE; j++) {
+                    if (isClockwise) tmp[i][j] = faces[type.num][(CUBE_SIZE - 1) - j][i];
+                    else tmp[i][j] = faces[type.num][j][(CUBE_SIZE - 1) - i];
                 }
             }
             return tmp;
