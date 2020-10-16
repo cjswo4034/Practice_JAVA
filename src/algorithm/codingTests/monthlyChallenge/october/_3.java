@@ -1,4 +1,4 @@
-package algorithm.programmers.monthlyChallenge.october;
+package algorithm.codingTests.monthlyChallenge.october;
 
 import java.util.ArrayList;
 import java.util.Arrays;

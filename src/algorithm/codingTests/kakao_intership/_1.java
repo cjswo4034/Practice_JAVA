@@ -1,4 +1,4 @@
-package algorithm.kakao_intership;
+package algorithm.codingTests.kakao_intership;
 
 import java.util.LinkedList;
 import java.util.Queue;
