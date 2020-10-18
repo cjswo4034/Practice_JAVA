@@ -4,6 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/* 구현. TemplateMethod 적용 (악세서리, 장비)
+ * TODO list
+ * 1. trap damage 직접 변경하는거
+ * 2. 아이템 효과 적용할 때 캐릭터를 직접 손대는거
+ * 3. accessoryMap -> Enum
+ * 4. Entity 구현체
+ * */
 public class RPG_Extreme_17081 {
     static final int[][] DIR = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
     static int n, m, k, l, startR, startC, trapDamage = 5;
@@ -17,7 +24,7 @@ public class RPG_Extreme_17081 {
         init();
         int turn = 0;
         for (; turn < cmds.length; turn++) {
-            if(mainCharacter.action(cmds[turn])) {
+            if (mainCharacter.action(cmds[turn])) {
                 turn++;
                 break;
             }
@@ -29,8 +36,8 @@ public class RPG_Extreme_17081 {
 
     static String getMap() {
         StringBuilder sb = new StringBuilder();
-        for (char[] r: map) {
-            for (char ch: r) sb.append(ch);
+        for (char[] r : map) {
+            for (char ch : r) sb.append(ch);
             sb.append("\n");
         }
         return sb.toString();
@@ -144,10 +151,16 @@ public class RPG_Extreme_17081 {
             actBeforeAction(monster);
 
             switch (nextEntity) {
-                case '^': status.damaged(trapDamage); break;
+                case '^':
+                    status.damaged(trapDamage);
+                    break;
                 case '&':
-                case 'M': fight(monster); break;
-                case 'B': acquireItem((Item) objects.get(point)); break;
+                case 'M':
+                    fight(monster);
+                    break;
+                case 'B':
+                    acquireItem((Item) objects.get(point));
+                    break;
             }
 
             if (object != null) {
@@ -194,7 +207,7 @@ public class RPG_Extreme_17081 {
         }
 
         void actBeforeAction(Monster monster) {
-            for (Accessory accessory: accessories)
+            for (Accessory accessory : accessories)
                 accessory.effectBeforeAction(this, monster);
         }
 
@@ -204,7 +217,7 @@ public class RPG_Extreme_17081 {
                 levelUp();
             }
 
-            for (Accessory accessory: accessories) accessory.effectAfterAction(this, monster);
+            for (Accessory accessory : accessories) accessory.effectAfterAction(this, monster);
             if (removeRe != -1) {
                 accessories.remove(removeRe);
                 removeRe = -1;
@@ -230,23 +243,13 @@ public class RPG_Extreme_17081 {
         }
 
         void equip(Equipment equipment) {
-            if (equipment.type == 'A') {
-                armor = equipment;
-                status.a = armor.value;
-            } else {
-                weapon = equipment;
-                status.w = weapon.value;
-            }
+            equipment.effect(this);
         }
 
         void equip(Accessory accessory) {
             if (accessories.size() >= 4 || accessories.contains(accessory)) return;
             accessories.add(accessory);
-            switch (accessory.getType()) {
-                case "EX": ((EX) accessory).effect(); break;
-                case "HU": superArmor = true; break;
-                case "DX": hasDx = true; trapDamage = 1; break;
-            }
+            accessory.effect(this);
         }
 
         public void removeItem(RE re) {
@@ -264,7 +267,7 @@ public class RPG_Extreme_17081 {
         String name;
         Status status = new Status();
 
-        Monster (StringTokenizer st) {
+        Monster(StringTokenizer st) {
             name = st.nextToken();
             status.nW = Integer.parseInt(st.nextToken());
             status.nA = Integer.parseInt(st.nextToken());
@@ -306,7 +309,8 @@ public class RPG_Extreme_17081 {
 
         Equipment toEquipment() {
             int value = Integer.parseInt(status);
-            return new Equipment(value, type);
+            if (type == 'A') return new Armor(value);
+            return new Weapon(value);
         }
 
         Accessory toAccessory() {
@@ -314,23 +318,63 @@ public class RPG_Extreme_17081 {
         }
     }
 
-    static class Equipment {
+    abstract static class Equipment {
         int value;
-        char type;
-        Equipment (int value, char type) {
+
+        Equipment(int value) {
             this.value = value;
-            this.type = type;
+        }
+
+        abstract void effect(MainCharacter character);
+    }
+
+    static class Armor extends Equipment {
+        Armor(int value) {
+            super(value);
+        }
+
+        @Override
+        void effect(MainCharacter character) {
+            character.status.a = value;
+            character.armor = this;
+        }
+    }
+
+    static class Weapon extends Equipment {
+        Weapon(int value) {
+            super(value);
+        }
+
+        @Override
+        void effect(MainCharacter character) {
+            character.status.w = value;
+            character.weapon = this;
         }
     }
 
     abstract static class Accessory {
-        abstract void effectAfterAction(MainCharacter character, Monster monster);
-        abstract void effectBeforeAction(MainCharacter character, Monster monster);
+        // 구현 강제
         abstract String getType();
+
+        // 선택적 구현
+        void effectAfterAction(MainCharacter character, Monster monster) {
+        }
+
+        ;
+
+        void effectBeforeAction(MainCharacter character, Monster monster) {
+        }
+
+        ;
+
+        void effect(MainCharacter character) {
+        }
+
+        ;
 
         @Override
         public boolean equals(Object obj) {
-            return getType().equals(((Accessory)obj).getType());
+            return getType().equals(((Accessory) obj).getType());
         }
 
         @Override
@@ -344,9 +388,6 @@ public class RPG_Extreme_17081 {
         void effectAfterAction(MainCharacter character, Monster monster) {
             if (!character.status.isDied() && monster != null && monster.status.isDied()) character.status.recover(3);
         }
-
-        @Override
-        void effectBeforeAction(MainCharacter character, Monster monster) {}
 
         @Override
         String getType() {
@@ -364,9 +405,6 @@ public class RPG_Extreme_17081 {
             character.c = startC;
             character.removeItem(this);
         }
-
-        @Override
-        void effectBeforeAction(MainCharacter character, Monster monster) {}
 
         @Override
         String getType() {
@@ -394,15 +432,10 @@ public class RPG_Extreme_17081 {
 
     static class EX extends Accessory {
         @Override
-        void effectAfterAction(MainCharacter character, Monster monster) {}
-
-        @Override
-        void effectBeforeAction(MainCharacter character, Monster monster) {}
-
-        void effect() {
-            for (Map.Entry<Point, Object> entry: objects.entrySet()) {
+        void effect(MainCharacter character) {
+            for (Map.Entry<Point, Object> entry : objects.entrySet()) {
                 if (entry.getValue() instanceof Monster) {
-                    ((Monster) entry.getValue()).status.maxExp = (int)((double)((Monster) entry.getValue()).status.maxExp * 1.2);
+                    ((Monster) entry.getValue()).status.maxExp = (int) ((double) ((Monster) entry.getValue()).status.maxExp * 1.2);
                 }
             }
         }
@@ -415,10 +448,10 @@ public class RPG_Extreme_17081 {
 
     static class DX extends Accessory {
         @Override
-        void effectAfterAction(MainCharacter character, Monster monster) {}
-
-        @Override
-        void effectBeforeAction(MainCharacter character, Monster monster) {}
+        void effect(MainCharacter character) {
+            character.hasDx = true;
+            trapDamage = 1;
+        }
 
         @Override
         String getType() {
@@ -428,7 +461,9 @@ public class RPG_Extreme_17081 {
 
     static class HU extends Accessory {
         @Override
-        void effectAfterAction(MainCharacter character, Monster monster) {}
+        void effect(MainCharacter character) {
+            character.superArmor = true;
+        }
 
         @Override
         void effectBeforeAction(MainCharacter character, Monster monster) {
@@ -444,12 +479,6 @@ public class RPG_Extreme_17081 {
 
     static class CU extends Accessory {
         @Override
-        void effectAfterAction(MainCharacter character, Monster monster) {}
-
-        @Override
-        void effectBeforeAction(MainCharacter character, Monster monster) {}
-
-        @Override
         String getType() {
             return "CU";
         }
@@ -458,7 +487,9 @@ public class RPG_Extreme_17081 {
     static class Status {
         int lv, remHp, curHp, nW, w, nA, a, curExp, maxExp;
         int bonusDamage = 1;
-        public Status() {}
+
+        public Status() {
+        }
 
         public Status(int curHp, int nW, int nA, int maxExp) {
             this.lv = 1;
