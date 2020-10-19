@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-// [Platinum 4] 구현, 시뮬레이션
+// [Platinum 4] BNF, 구현, 파싱
 public class 도발봇_9167 {
     public static void main(String[] args) throws Exception{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
