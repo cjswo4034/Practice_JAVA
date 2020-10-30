@@ -1,4 +1,4 @@
-package oop.blackjack;
+package blackjack;
 
 public class Card {
     private final Pattern pattern;  // 인스턴스 생성과 상속을 방지하여 상수값의 타입안정성이 보장된다.

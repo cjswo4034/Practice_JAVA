@@ -1,4 +1,4 @@
-package oop.blackjack;
+package blackjack;
 
 public enum Pattern {
     HEART, DIAMOND, SPACE, CLOVER

@@ -1,4 +1,4 @@
-package oop.blackjack;
+package blackjack;
 
 import java.util.Scanner;
 
